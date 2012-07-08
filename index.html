@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Todo_Part1</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="author" content="The Chopping Block, Inc." />
+	<meta name="geo.country" content="US" />
+	<meta name="dc.language" content="en" />
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" charset="utf-8" />
+	
+	<style type="text/css" media="screen">		
+		/*local styles if any (quick tests and local only overrides)*/
+		
+		.wrap{
+			
+			width: 300px;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		
+		.task{
+			border-bottom: 1px dotted black;
+			height: 30px;
+		}
+		
+		.completed{
+			background-color: #5CFF1D;	
+		}
+		
+		.selected{
+			border: 2px solid blue;
+		}
+	</style>
+</head>
+<body>
+
+	<div class="wrap" >
+		<h1>Project: Todo_Part1</h1>
+		<ul>
+			<li>1. When you type in a new task in the entry field and hit the Enter key, it should be added to the top of the list</li>
+			<li>2. Clicking on an item should mark it as completed (add a CSS style of some sort to indicate this)</li>
+			<li>3. In addition to clicking, you should be able to use keys to navigate the list. When an element is "active", apply a CSS class. Hitting the Spacebar will complete the active item. Using the up and down arrows will change which item is active.</li>
+			<li></li>
+		</ul>
+		Enter new task: 
+		<input id="taskentry" name="taskentry" type="text"></input>
+		<div id="tasklist" class="tasklist">
+			<div class="task"></div>
+			<div class="task"></div>
+			<div class="task"></div>
+			<div class="task"></div>									
+			
+		</div>
+	</div>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+	<script type="text/javascript" charset="utf-8">
+	
+		var UPKEY = 38;
+		var DOWNKEY = 40;
+		var ENTERKEY = 13;	
+		var SPACE = 32;
+	
+	
+		var tasklist = document.getElementById('tasklist');
+		var currenttask = false;
+		
+		var handleTaskClick = function(e){
+			e.target.addClass("completed");		
+		}
+		
+		var taskentry = $('#taskentry');
+
+		var typing;
+		
+		taskentry.bind("focus", function(e){
+			typing = true;
+			
+		}, false);
+		
+		taskentry.bind("blur", function(e){
+			typing = false;
+		}, false);
+		
+		
+		window.addEventListener("keyup", function(e){
+			
+			if(e.keyCode == ENTERKEY){
+				var taskentryvalue = $('#taskentry').val();
+				//Checking to see if that field has some text in it
+				if(taskentryvalue != ""){
+					//  $("<div></div>") Returns a new div tag
+					// It isn't on the page, you have to append it
+					//var newdiv = document.createElement("div");	
+					var newdiv = $('.tasklist').prepend('<div class="task">'+taskentryvalue+'</div>');
+					//jQuery addClass
+					//newdiv.classList.add("task");
+					//Get value of entry field
+					//newdiv.innerHTML = taskentryvalue;
+					//Add the click event listener
+					//newdiv.addEventListener("click", handleTaskClick, false);
+					
+					var tasklistchildren = tasklist.children.length;
+
+					
+					//tasklist.insertBefore(newdiv, tasklist.children[0]);
+					
+					if(tasklistchildren+1 == tasklist.children.length){
+						$('#taskentry').value = "";
+					}
+				}
+			}
+			
+			if(e.keyCode == UPKEY){				
+				$("#taskentry").blur();
+				if(currenttask){
+					//Either go up the list, or loop backaround					
+					if(currenttask.previousElementSibling){
+						
+						currenttask.classList.remove("selected");
+						
+						currenttask = currenttask.previousElementSibling;
+						
+						currenttask.classList.add("selected");
+					}else{
+						currenttask.classList.remove("selected");
+						currenttask = tasklist.lastElementChild;
+						currenttask.classList.add("selected");
+//						tasklist.children[tasklist.children.length-1]
+					}
+				}else{
+					//console.log('up key');
+
+					currenttask = tasklist.children[0];
+					//currenttask.addClass("selected");
+					$('.tasklist').children(":first").addClass("selected");
+					
+				}
+				
+			}
+			
+			if(e.keyCode == DOWNKEY){
+				$("#taskentry").blur();
+				if(currenttask){
+					//Either go down the list, or loop backaround					
+					if(currenttask.nextElementSibling){
+						currenttask.classList.remove("selected");
+						currenttask = currenttask.nextElementSibling;
+						currenttask.classList.add("selected");
+					}else{
+						currenttask.classList.remove("selected");
+						currenttask = tasklist.firstElementChild;
+						currenttask.classList.add("selected");
+//						tasklist.children[tasklist.children.length-1]
+					}				
+				
+				}else{
+					console.log('down key');
+
+					//currenttask = tasklist.children[0];
+					//currenttask.classList.add("selected");
+					$('.tasklist').children(":first").addClass("selected");
+				}
+				
+			}
+
+			if(e.keyCode == SPACE && !typing){
+
+					if(currenttask){
+						if(currenttask.innerHTML != ""){
+						currenttask.classList.add("completed");
+						}
+					}
+			
+			}
+	
+		}, false);
+
+	</script>
+</body>
+</html>
